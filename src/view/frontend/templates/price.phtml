@@ -100,7 +100,7 @@ $product = $block->getProduct();
         waitForPriceElement(oldPriceSelector).then(() => {
             var oldPricePriceElement = document.querySelector(oldPricePriceSelector);
             oldPricePriceElement.classList.remove('text-xl');
-            oldPricePriceElement.classList.add('text-l');
+            oldPricePriceElement.classList.add('text-lg');
 
             var oldPriceLabelElement = document.querySelector(oldPriceLabelSelector);
             if (oldPriceLabel) {
@@ -110,7 +110,7 @@ $product = $block->getProduct();
                 }
 
                 oldPriceLabelElement.classList.add('price-label');
-                oldPriceLabelElement.classList.add('text-l');
+                oldPriceLabelElement.classList.add('text-lg');
                 oldPriceLabelElement.classList.add('line-through');
                 oldPriceLabelElement.classList.add('text-gray-900');
                 oldPriceLabelElement.classList.add('mr-1');
@@ -127,7 +127,7 @@ $product = $block->getProduct();
                 }
 
                 oldPriceInformationElement.classList.add('price-information');
-                oldPriceInformationElement.classList.add('text-l');
+                oldPriceInformationElement.classList.add('text-lg');
                 oldPriceInformationElement.classList.add('line-through');
                 oldPriceInformationElement.classList.add('text-gray-900');
                 oldPriceInformationElement.classList.add('ml-1');
@@ -170,7 +170,7 @@ $product = $block->getProduct();
                     }
 
                     informationLabelElement.classList.add('price-label');
-                    informationLabelElement.classList.add('text-l');
+                    informationLabelElement.classList.add('text-lg');
                     informationLabelElement.classList.add('text-gray-900');
                     informationLabelElement.classList.add('mr-1');
                     informationLabelElement.innerHTML = informationLabel;
@@ -190,7 +190,7 @@ $product = $block->getProduct();
                     informationPriceElement.classList.add('price-wrapper');
                     informationPriceElement.classList.add('title-font');
                     informationPriceElement.classList.add('font-regular');
-                    informationPriceElement.classList.add('text-l');
+                    informationPriceElement.classList.add('text-lg');
                     informationPriceElement.classList.add('text-gray-900');
 
                     var informationPricePriceElement = document.querySelector(informationPricePriceSelector);
@@ -213,7 +213,7 @@ $product = $block->getProduct();
                     }
 
                     informationInformationElement.classList.add('price-information');
-                    informationInformationElement.classList.add('text-l');
+                    informationInformationElement.classList.add('text-lg');
                     informationInformationElement.classList.add('text-gray-900');
                     informationInformationElement.classList.add('ml-1');
                     informationInformationElement.innerHTML = informationInformation;
