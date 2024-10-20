@@ -1,0 +1,39 @@
+{
+    "require": [
+        "database_magento2-module-demo-hyva.json",
+        "elasticsearch_magento-module-demo-hyva.json",
+        "rabbitmq_magento-module-demo-hyva.json",
+        "mailcatcher_magento.json",
+        "webserver_php_nodejs_magento-module-demo-hyva.json",
+        "magento2-module-demo-hyva.json"
+    ],
+    "global": {
+        "systemName": "infrangible_m2_catalog_product_price_hyva"
+    },
+    "ws": {
+        "webServerType": "apache_php_nodejs",
+        "webServerVersion": "2.4",
+        "phpVersion": "8.2",
+        "nodeJsVersion": "16.14",
+        "containerVolumes": [
+            "../src:/var/www/magento/htdocs/app/code/Infrangible/CatalogProductPriceHyva:www-data"
+        ]
+    },
+    "db": {
+        "databaseType": "mysql",
+        "databaseVersion": "5.7"
+    },
+    "es": {
+        "elasticsearchVersion": "7.9"
+    },
+    "mq": {
+        "rabbitMqVersion": "3.8"
+    },
+    "mc": {
+        "mailCatcherVersion": "0.6"
+    },
+    "ms": {
+        "magentoVersion": "2.4.6-p3",
+        "magentoEdition": "community"
+    }
+}

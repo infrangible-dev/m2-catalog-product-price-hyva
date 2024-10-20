@@ -1,0 +1,289 @@
+<?php
+
+declare(strict_types=1);
+
+/**
+ * @author      Andreas Knollmann
+ * @copyright   2014-2024 Softwareentwicklung Andreas Knollmann
+ * @license     http://www.opensource.org/licenses/mit-license.php MIT
+ */
+
+use Hyva\Theme\Model\ViewModelRegistry;
+use Hyva\Theme\ViewModel\ProductPrice;
+use Infrangible\CatalogProductPriceHyva\Block\Price;
+use Magento\Catalog\Model\Product\Type;
+use Magento\Catalog\Pricing\Price\FinalPrice;
+use Magento\Catalog\Pricing\Price\RegularPrice;
+
+/** @var Price $block */
+/** @var ViewModelRegistry $viewModels */
+$productPriceViewModel = $viewModels->require(ProductPrice::class);
+
+$product = $block->getProduct();
+?>
+
+<script>
+    function waitForPriceElement(selector) {
+        return new Promise(resolve => {
+            if (document.querySelector(selector)) {
+                return resolve(document.querySelector(selector));
+            }
+
+            const callback = (mutationList, observer) => {
+                if (document.querySelector(selector)) {
+                    observer.disconnect();
+                    resolve(document.querySelector(selector));
+                }
+            };
+
+            const observer = new MutationObserver(callback);
+
+            observer.observe(document.body, {
+                childList: true,
+                subtree: true
+            });
+        });
+    }
+
+    function updateFinalPrice(
+        finalPriceLabel,
+        finalPriceInformation,
+        finalPriceSelector,
+        finalPriceLabelSelector,
+        finalPricePriceSelector,
+        finalPriceInformationSelector,
+        removeLabel
+    ) {
+        waitForPriceElement(finalPriceSelector).then(() => {
+            var finalPricePriceElement = document.querySelector(finalPricePriceSelector);
+
+            var finalPriceLabelElement = document.querySelector(finalPriceLabelSelector);
+            if (finalPriceLabel) {
+                if (finalPriceLabelElement === null) {
+                    finalPriceLabelElement = document.createElement('span');
+                    finalPricePriceElement.insertAdjacentElement('beforebegin', finalPriceLabelElement);
+                }
+
+                finalPriceLabelElement.classList.add('price-label');
+                finalPriceLabelElement.classList.add('block');
+                finalPriceLabelElement.classList.add('text-xl');
+                finalPriceLabelElement.innerHTML = finalPriceLabel;
+            } else if (removeLabel && finalPriceLabelElement !== null) {
+                finalPriceLabelElement.remove();
+            }
+
+            var finalPriceInformationElement = document.querySelector(finalPriceInformationSelector);
+            if (finalPriceInformation) {
+                if (finalPriceInformationElement === null) {
+                    finalPriceInformationElement = document.createElement('span');
+                    finalPricePriceElement.insertAdjacentElement('afterend', finalPriceInformationElement);
+                }
+
+                finalPriceInformationElement.classList.add('price-information');
+                finalPriceInformationElement.classList.add('block');
+                finalPriceInformationElement.classList.add('text-xl');
+                finalPriceInformationElement.innerHTML = finalPriceInformation;
+            } else if (finalPriceInformationElement !== null) {
+                finalPriceInformationElement.remove();
+            }
+        });
+    }
+
+    function updateOldPrice(
+        oldPriceLabel,
+        oldPriceInformation,
+        oldPriceSelector,
+        oldPriceLabelSelector,
+        oldPricePriceSelector,
+        oldPriceInformationSelector
+    ) {
+        waitForPriceElement(oldPriceSelector).then(() => {
+            var oldPricePriceElement = document.querySelector(oldPricePriceSelector);
+            oldPricePriceElement.classList.remove('text-xl');
+            oldPricePriceElement.classList.add('text-l');
+
+            var oldPriceLabelElement = document.querySelector(oldPriceLabelSelector);
+            if (oldPriceLabel) {
+                if (oldPriceLabelElement === null) {
+                    oldPriceLabelElement = document.createElement('span');
+                    oldPricePriceElement.insertAdjacentElement('beforebegin', oldPriceLabelElement);
+                }
+
+                oldPriceLabelElement.classList.add('price-label');
+                oldPriceLabelElement.classList.add('text-l');
+                oldPriceLabelElement.classList.add('line-through');
+                oldPriceLabelElement.classList.add('text-gray-900');
+                oldPriceLabelElement.classList.add('mr-1');
+                oldPriceLabelElement.innerHTML = oldPriceLabel;
+            } else if (oldPriceLabelElement !== null) {
+                oldPriceLabelElement.remove();
+            }
+
+            var oldPriceInformationElement = document.querySelector(oldPriceInformationSelector);
+            if (oldPriceInformation) {
+                if (oldPriceInformationElement === null) {
+                    oldPriceInformationElement = document.createElement('span');
+                    oldPricePriceElement.insertAdjacentElement('afterend', oldPriceInformationElement);
+                }
+
+                oldPriceInformationElement.classList.add('price-information');
+                oldPriceInformationElement.classList.add('text-l');
+                oldPriceInformationElement.classList.add('line-through');
+                oldPriceInformationElement.classList.add('text-gray-900');
+                oldPriceInformationElement.classList.add('ml-1');
+                oldPriceInformationElement.innerHTML = oldPriceInformation;
+            } else if (oldPriceInformationElement !== null) {
+                oldPriceInformationElement.remove();
+            }
+        });
+    }
+
+    function updateInformation(
+        informationLabel,
+        informationPrice,
+        informationInformation,
+        informationSelector,
+        informationLabelSelector,
+        informationPriceSelector,
+        informationPricePriceSelector,
+        informationInformationSelector,
+        adjacentElementSelector
+    ) {
+        waitForPriceElement(adjacentElementSelector).then(() => {
+            var informationElement = document.querySelector(informationSelector);
+            if (informationLabel || informationPrice || informationInformation) {
+                if (informationElement === null) {
+                    informationElement = document.createElement('div');
+                    document.querySelector(adjacentElementSelector).insertAdjacentElement(
+                        'beforebegin', informationElement);
+                }
+
+                informationElement.classList.add('price-information');
+                informationElement.classList.add('mr-2');
+                informationElement.classList.add('flex');
+
+                var informationLabelElement = document.querySelector(informationLabelSelector);
+                if (informationLabel) {
+                    if (informationLabelElement === null) {
+                        informationLabelElement = document.createElement('span');
+                        informationElement.insertAdjacentElement('beforeend', informationLabelElement);
+                    }
+
+                    informationLabelElement.classList.add('price-label');
+                    informationLabelElement.classList.add('text-l');
+                    informationLabelElement.classList.add('text-gray-900');
+                    informationLabelElement.classList.add('mr-1');
+                    informationLabelElement.innerHTML = informationLabel;
+
+                } else if (informationLabelElement !== null) {
+                    informationLabelElement.remove();
+                }
+
+                var informationPriceElement = document.querySelector(informationPriceSelector);
+                if (informationPrice) {
+                    if (informationPriceElement === null) {
+                        informationPriceElement = document.createElement('span');
+                        informationPriceElement.id = 'product-price-<?= (int)$product->getId(); ?>';
+                        informationElement.insertAdjacentElement('beforeend', informationPriceElement);
+                    }
+
+                    informationPriceElement.classList.add('price-wrapper');
+                    informationPriceElement.classList.add('title-font');
+                    informationPriceElement.classList.add('font-regular');
+                    informationPriceElement.classList.add('text-l');
+                    informationPriceElement.classList.add('text-gray-900');
+
+                    var informationPricePriceElement = document.querySelector(informationPricePriceSelector);
+                    if (informationPricePriceElement === null) {
+                        informationPricePriceElement = document.createElement('span');
+                        informationPriceElement.insertAdjacentElement('beforeend', informationPricePriceElement);
+                    }
+
+                    informationPricePriceElement.classList.add('price');
+                    informationPricePriceElement.innerHTML = hyva.formatPrice(informationPrice, false);
+                } else if (informationPriceElement !== null) {
+                    informationPriceElement.remove();
+                }
+
+                var informationInformationElement = document.querySelector(informationInformationSelector);
+                if (informationInformation) {
+                    if (informationInformationElement === null) {
+                        informationInformationElement = document.createElement('span');
+                        informationElement.insertAdjacentElement('beforeend', informationInformationElement);
+                    }
+
+                    informationInformationElement.classList.add('price-information');
+                    informationInformationElement.classList.add('text-l');
+                    informationInformationElement.classList.add('text-gray-900');
+                    informationInformationElement.classList.add('ml-1');
+                    informationInformationElement.innerHTML = informationInformation;
+                } else if (informationInformationElement !== null) {
+                    informationInformationElement.remove();
+                }
+            } else if (informationElement !== null) {
+                informationElement.remove();
+            }
+        });
+    }
+
+    window.addEventListener('update-product-final-price', function () {
+        var finalPriceSelector = '.product-info-main .price-box .price-container > .final-price';
+        var finalPriceLabelSelector = '.product-info-main .price-box .price-container > .final-price .price-label';
+        var finalPricePriceSelector = '.product-info-main .price-box .price-container > .final-price #product-price-<?= (int)$product->getId(); ?>';
+        var finalPriceInformationSelector = '.product-info-main .price-box .price-container > .final-price .price-information';
+        var oldPriceSelector = '.product-info-main .price-box .price-container > .old-price';
+        var oldPriceLabelSelector = '.product-info-main .price-box .price-container > .old-price .price-label';
+        var oldPricePriceSelector = '.product-info-main .price-box .price-container > .old-price #product-price-<?= (int)$product->getId(); ?>';
+        var oldPriceInformationSelector = '.product-info-main .price-box .price-container > .old-price .price-information';
+        var informationSelector = '.product-info-main .price-box .price-container > .price-information';
+        var informationLabelSelector = '.product-info-main .price-box .price-container > .price-information .price-label';
+        var informationPriceSelector = '.product-info-main .price-box .price-container > .price-information #product-price-<?= (int)$product->getId(); ?>';
+        var informationPricePriceSelector = '.product-info-main .price-box .price-container > .price-information #product-price-<?= (int)$product->getId(); ?> .price';
+        var informationInformationSelector = '.product-info-main .price-box .price-container > .price-information .price-information';
+
+        var finalPrice = <?= $productPriceViewModel->getPriceValue(FinalPrice::PRICE_CODE, $product); ?>;
+        var regularPrice = <?= $productPriceViewModel->getPriceValue(RegularPrice::PRICE_CODE, $product); ?>;
+        var catalogProductPriceData = <?= $block->getProductData(); ?>;
+
+        var finalPriceLabel = catalogProductPriceData.finalPrice.label;
+        var finalPriceInformation = catalogProductPriceData.finalPrice.information;
+        var oldPriceLabel = catalogProductPriceData.oldPrice.label;
+        var oldPriceInformation = catalogProductPriceData.oldPrice.information;
+        var informationLabel = catalogProductPriceData.information.label;
+        var informationPrice = catalogProductPriceData.information.price;
+        var informationInformation = catalogProductPriceData.information.information;
+
+        updateFinalPrice(
+            finalPriceLabel,
+            finalPriceInformation,
+            finalPriceSelector,
+            finalPriceLabelSelector,
+            finalPricePriceSelector,
+            finalPriceInformationSelector,
+            <?= $product->getTypeId() === Type::DEFAULT_TYPE ? 'true' : 'false'; ?>
+        );
+
+        if (finalPrice < regularPrice) {
+            updateOldPrice(
+                oldPriceLabel,
+                oldPriceInformation,
+                oldPriceSelector,
+                oldPriceLabelSelector,
+                oldPricePriceSelector,
+                oldPriceInformationSelector
+            );
+        }
+
+        updateInformation(
+            informationLabel,
+            informationPrice,
+            informationInformation,
+            informationSelector,
+            informationLabelSelector,
+            informationPriceSelector,
+            informationPricePriceSelector,
+            informationInformationSelector,
+            finalPrice < regularPrice ? oldPriceSelector : finalPriceSelector
+        );
+    });
+</script>
