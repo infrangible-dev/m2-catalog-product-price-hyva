@@ -7,6 +7,9 @@
         "{{{1200128_anodosys}}}/webserver_php_nodejs_magento-module-demo-hyva.json",
         "{{{1200128_anodosys}}}/magento2-module-demo-hyva.json"
     ],
+    "extensions": {
+        "1200128_anodosys": "dev"
+    },
     "global": {
         "systemName": "infrangible_m2_catalog_product_price_hyva"
     },
